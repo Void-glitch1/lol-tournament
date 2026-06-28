@@ -472,6 +472,112 @@
     color: var(--text-dim);
     letter-spacing: 1px;
   }
+
+  /* ── COUNTDOWN ── */
+  .countdown-section {
+    max-width: 700px;
+    margin: 0 auto 28px;
+    padding: 0 24px;
+  }
+
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .countdown-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    padding: 14px 8px 10px;
+    text-align: center;
+  }
+
+  .countdown-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+
+  .countdown-unit {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .countdown-ended {
+    text-align: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    padding: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+
+  /* ── SPOTS ── */
+  .spots-wrap {
+    max-width: 700px;
+    margin: 0 auto 28px;
+    padding: 0 24px;
+  }
+
+  .spots-bar-bg {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .spots-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .spots-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .spots-label span.spots-count { color: var(--gold); font-weight: 700; }
+
+  /* ── LINK EXPIRY TIMER ── */
+  .link-timer {
+    margin-top: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+  }
+  .link-timer span {
+    color: #e74c3c;
+    font-weight: 700;
+  }
+  .link-expired {
+    margin-top: 14px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: #e74c3c;
+  }
 </style>
 </head>
 <body>
@@ -508,6 +614,28 @@
         <div class="info-label">Size</div>
         <div class="info-value">32 Players</div>
       </div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-section">
+    <p class="section-title">Tournament Starts In</p>
+    <div id="countdown-grid" class="countdown-grid">
+      <div class="countdown-box"><span class="countdown-num" id="cd-days">--</span><span class="countdown-unit">Days</span></div>
+      <div class="countdown-box"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-unit">Hours</span></div>
+      <div class="countdown-box"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-unit">Minutes</span></div>
+      <div class="countdown-box"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-unit">Seconds</span></div>
+    </div>
+  </div>
+
+  <!-- SPOTS -->
+  <div class="spots-wrap">
+    <div class="spots-bar-bg">
+      <div class="spots-bar-fill" id="spots-fill" style="width:0%"></div>
+    </div>
+    <div class="spots-label">
+      <span>Spots Filled</span>
+      <span><span class="spots-count" id="spots-taken">0</span> / 32 Players</span>
     </div>
   </div>
 
@@ -638,9 +766,7 @@
         Register now on Tournament — spots are limited to 32 players.<br>
         Check your Discord after sign-up for match scheduling.
       </p>
-      <a href="https://play.toornament.com/en_US/tournaments/2504658435391760383/" class="reg-link-btn" target="_blank" rel="noopener noreferrer">
-        🏆 &nbsp;Register on Tournament
-      </a>
+      <div id="register-btn-wrap"></div>
     </div>
   </section>
 
@@ -651,32 +777,54 @@
 </div>
 
 <script>
-  var completed = {};
+  // ══════════════════════════════════════════════
+  // ⚙️ SETTINGS — عدّل من هنا بس
+  // ══════════════════════════════════════════════
+  var TOURNAMENT_DATE = '2026-08-01T20:00:00';  // تاريخ ووقت التورنامنت
+  var SPOTS_TAKEN     = 0;                        // عدد اللاعبين المسجلين دلوقتي
+  var TOTAL_SPOTS     = 32;                       // إجمالي الأماكن
+  // ══════════════════════════════════════════════
 
+  // ── FIX #2: حفظ الـ progress في localStorage ──
+  var completed = JSON.parse(localStorage.getItem('gc_steps') || '{}');
+
+  // ── FIX #3: إخفاء الـ register link من الـ HTML ──
+  // الرابط بيتحط بـ JS بس لما يكمل الـ 5 خطوات
+  var REGISTER_URL = 'https://play.toornament.com/en_US/tournaments/2504658435391760383/';
+
+  // ── تطبيق الحالة المحفوظة لما تتفتح الصفحة ──
+  window.addEventListener('DOMContentLoaded', function() {
+    Object.keys(completed).forEach(function(step) {
+      var card = document.getElementById('card-' + step);
+      if (card) card.classList.add('done');
+    });
+    updateProgress();
+    if (Object.keys(completed).length === 5) {
+      showUnlock();
+    }
+    startCountdown();
+    updateSpots();
+  });
+
+  // ── FIX #1: الـ delay بقى 8 ثواني (أطول من الـ 1.5) ──
   function scheduleComplete(step) {
     if (completed[step]) return;
-    // Mark as done after a short delay (simulates user visiting the link)
     setTimeout(function() {
       complete(step);
-    }, 1500);
+    }, 8000);
   }
 
   function complete(step) {
     if (completed[step]) return;
     completed[step] = true;
+    localStorage.setItem('gc_steps', JSON.stringify(completed));
 
     var card = document.getElementById('card-' + step);
     card.classList.add('done');
-
     updateProgress();
 
-    var count = Object.keys(completed).length;
-    if (count === 5) {
-      setTimeout(function() {
-        var sec = document.getElementById('unlock-section');
-        sec.classList.add('visible');
-        sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 400);
+    if (Object.keys(completed).length === 5) {
+      setTimeout(showUnlock, 400);
     }
   }
 
@@ -684,6 +832,111 @@
     var count = Object.keys(completed).length;
     document.getElementById('progress-fill').style.width = (count / 5 * 100) + '%';
     document.getElementById('progress-label').textContent = count + ' / 5 completed';
+  }
+
+  // ── FIX #3: زرار التسجيل بيتعمل بـ JS مش موجود في الـ HTML ──
+  var LINK_TIMEOUT = 45; // ثواني قبل ما الرابط يختفي — غيّره من هنا
+
+  function showUnlock() {
+    var sec = document.getElementById('unlock-section');
+    sec.classList.add('visible');
+
+    var btnWrap = document.getElementById('register-btn-wrap');
+    if (btnWrap && !btnWrap.hasChildNodes()) {
+
+      // نشوف امتى أول مرة ظهر الزرار
+      var shownAt = localStorage.getItem('gc_link_shown_at');
+      var now = Date.now();
+
+      if (!shownAt) {
+        // أول مرة يظهر — نحفظ الوقت
+        shownAt = now;
+        localStorage.setItem('gc_link_shown_at', shownAt);
+      }
+
+      var elapsed  = Math.floor((now - parseInt(shownAt)) / 1000);
+      var remaining = LINK_TIMEOUT - elapsed;
+
+      if (remaining <= 0) {
+        // الوقت خلص — نوضي رسالة انتهى مباشرة
+        var expired = document.createElement('p');
+        expired.className = 'link-expired';
+        expired.textContent = '⛔ Registration link has expired. Contact us on our Discord server.';
+        btnWrap.appendChild(expired);
+        sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // لسه في وقت — نعرض الزرار والعداد
+      var btn = document.createElement('a');
+      btn.id = 'reg-btn';
+      btn.href = REGISTER_URL;
+      btn.className = 'reg-link-btn';
+      btn.target = '_blank';
+      btn.rel = 'noopener noreferrer';
+      btn.innerHTML = '🏆 &nbsp;Register on Tournament';
+      btnWrap.appendChild(btn);
+
+      var timerLabel = document.createElement('p');
+      timerLabel.className = 'link-timer';
+      timerLabel.id = 'link-timer-label';
+      timerLabel.innerHTML = 'This link expires in <span id="link-secs">' + remaining + '</span>s';
+      btnWrap.appendChild(timerLabel);
+
+      var linkInterval = setInterval(function() {
+        remaining--;
+        var secsEl = document.getElementById('link-secs');
+        if (secsEl) secsEl.textContent = remaining;
+
+        if (remaining <= 0) {
+          clearInterval(linkInterval);
+          var b = document.getElementById('reg-btn');
+          var t = document.getElementById('link-timer-label');
+          if (b) b.remove();
+          if (t) t.remove();
+          var exp = document.createElement('p');
+          exp.className = 'link-expired';
+          exp.textContent = '⛔ Registration link has expired. Please refresh the page.';
+          btnWrap.appendChild(exp);
+        }
+      }, 1000);
+    }
+
+    sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ── Countdown Timer ──
+  function startCountdown() {
+    function tick() {
+      var now  = new Date().getTime();
+      var end  = new Date(TOURNAMENT_DATE).getTime();
+      var diff = end - now;
+
+      if (diff <= 0) {
+        document.getElementById('countdown-grid').innerHTML =
+          '<div class="countdown-ended">🏆 Tournament Has Started!</div>';
+        return;
+      }
+
+      var d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      var s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
+      document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+      document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+      document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  // ── Spots Counter ──
+  function updateSpots() {
+    var pct = (SPOTS_TAKEN / TOTAL_SPOTS) * 100;
+    document.getElementById('spots-fill').style.width  = pct + '%';
+    document.getElementById('spots-taken').textContent = SPOTS_TAKEN;
   }
 </script>
 </body>
