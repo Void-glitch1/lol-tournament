@@ -578,6 +578,169 @@
     letter-spacing: 1px;
     color: #e74c3c;
   }
+
+  /* ── VERIFICATION OVERLAY ── */
+  .verify-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,5,8,0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .verify-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .verify-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    clip-path: polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+    padding: 40px 36px;
+    max-width: 340px;
+    width: 90%;
+    text-align: center;
+  }
+  .verify-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(200,155,60,0.15);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .verify-status {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    min-height: 20px;
+    transition: opacity 0.3s;
+  }
+  .verify-bar-bg {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .verify-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .verify-result {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: none;
+    margin-bottom: 8px;
+  }
+  .verify-result.success { color: #27AE60; }
+  .verify-sublabel {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    display: none;
+  }
+  .verify-btn-wrap {
+    display: none;
+    margin-top: 20px;
+  }
+  .verify-btn {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 28px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    clip-path: polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .verify-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── TOAST ── */
+  .toast-wrap {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    padding: 12px 18px;
+    background: var(--bg-card);
+    border: 1px solid #27AE60;
+    color: #27AE60;
+    clip-path: polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  /* ── SPOTS FULL ── */
+  .spots-full-msg {
+    text-align: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: #e74c3c;
+    padding: 14px;
+    border: 1px solid rgba(231,76,60,0.3);
+    background: rgba(231,76,60,0.05);
+    clip-path: polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+    display: none;
+  }
+
+  /* ── ADMIN RESET ── */
+  .admin-reset-btn {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.15);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: color 0.2s, border-color 0.2s;
+    z-index: 9998;
+  }
+  .admin-reset-btn:hover { color: #e74c3c; border-color: rgba(231,76,60,0.4); }
 </style>
 </head>
 <body>
@@ -687,7 +850,7 @@
         <div class="step-number">1</div>
         <div class="step-info">
           <p class="step-title">Subscribe to NextLevelX</p>
-          <p class="step-desc">Live match coverage &amp; tournament content</p>
+          <p class="step-desc">Gaming content &amp; Valorant highlights</p>
         </div>
         <div class="checkmark">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><polyline points="2,7.5 5.5,11 13,3.5" stroke="#27AE60" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -717,7 +880,7 @@
         <div class="step-number">3</div>
         <div class="step-info">
           <p class="step-title">Subscribe to ItTz Yami</p>
-          <p class="step-desc">Gaming content &amp; LoL highlights</p>
+          <p class="step-desc">Live match coverage &amp; tournament content</p>
         </div>
         <div class="checkmark">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><polyline points="2,7.5 5.5,11 13,3.5" stroke="#27AE60" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -767,6 +930,8 @@
         Check your Discord after sign-up for match scheduling.
       </p>
       <div id="register-btn-wrap"></div>
+      <p class="spots-full-msg" id="spots-full-msg">⛔ Registration Closed — All 32 spots are filled.</p>
+
     </div>
   </section>
 
@@ -774,13 +939,35 @@
     &copy; 2026 Gamers Café's Tournament &nbsp;·&nbsp; Organized by Gamers Café's Server Admins &nbsp;·&nbsp; 🇪🇬 Egypt
   </footer>
 
+  <!-- TOAST CONTAINER -->
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <!-- VERIFICATION OVERLAY -->
+  <div class="verify-overlay" id="verify-overlay">
+    <div class="verify-box">
+      <div class="verify-spinner" id="verify-spinner"></div>
+      <div class="verify-status" id="verify-status">Initializing...</div>
+      <div class="verify-bar-bg">
+        <div class="verify-bar-fill" id="verify-bar"></div>
+      </div>
+      <div class="verify-result" id="verify-result"></div>
+      <div class="verify-sublabel" id="verify-sublabel"></div>
+      <div class="verify-btn-wrap" id="verify-btn-wrap">
+        <button class="verify-btn" onclick="closeVerify()">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN RESET -->
+  <button class="admin-reset-btn" onclick="adminReset()" title="Admin: Reset Progress">⚙ Reset</button>
+
 </div>
 
 <script>
   // ══════════════════════════════════════════════
   // ⚙️ SETTINGS — عدّل من هنا بس
   // ══════════════════════════════════════════════
-  var TOURNAMENT_DATE = '2026-07-10T21:00:00';  // تاريخ ووقت التورنامنت
+  var TOURNAMENT_DATE = '2026-07-02T20:20:00';  // تاريخ ووقت التورنامنت
   var SPOTS_TAKEN     = 0;                        // عدد اللاعبين المسجلين دلوقتي
   var TOTAL_SPOTS     = 32;                       // إجمالي الأماكن
   // ══════════════════════════════════════════════
@@ -806,12 +993,84 @@
     updateSpots();
   });
 
-  // ── FIX #1: الـ delay بقى 8 ثواني (أطول من الـ 1.5) ──
+  // ── Verification Overlay ──
+  var verifySteps = [
+    { text: 'Connecting to YouTube...', pct: 20,  dur: 900  },
+    { text: 'Fetching channel data...',  pct: 45,  dur: 1000 },
+    { text: 'Checking subscription...',  pct: 70,  dur: 1100 },
+    { text: 'Validating account...',     pct: 88,  dur: 800  },
+    { text: 'Finalizing...',             pct: 97,  dur: 600  },
+  ];
+
+  var pendingStep = null;
+
   function scheduleComplete(step) {
     if (completed[step]) return;
-    setTimeout(function() {
-      complete(step);
-    }, 8000);
+    pendingStep = step;
+    // فتح الـ overlay بعد ما يفتح اليوتيوب بثانيتين
+    setTimeout(function() { startVerify(); }, 2000);
+  }
+
+  function startVerify() {
+    var overlay = document.getElementById('verify-overlay');
+    var spinner = document.getElementById('verify-spinner');
+    var statusEl = document.getElementById('verify-status');
+    var barEl    = document.getElementById('verify-bar');
+    var resultEl = document.getElementById('verify-result');
+    var subEl    = document.getElementById('verify-sublabel');
+    var btnWrap  = document.getElementById('verify-btn-wrap');
+
+    // reset
+    spinner.style.display  = 'block';
+    statusEl.style.display = 'block';
+    resultEl.style.display = 'none';
+    subEl.style.display    = 'none';
+    btnWrap.style.display  = 'none';
+    barEl.style.width      = '0%';
+    resultEl.className     = 'verify-result';
+    overlay.classList.add('active');
+
+    // شغّل الـ steps بالتسلسل
+    var i = 0;
+    function runStep() {
+      if (i >= verifySteps.length) {
+        // كمّلنا — نوضي النتيجة
+        barEl.style.width = '100%';
+        setTimeout(showVerifyResult, 400);
+        return;
+      }
+      var s = verifySteps[i++];
+      statusEl.textContent = s.text;
+      barEl.style.width    = s.pct + '%';
+      setTimeout(runStep, s.dur);
+    }
+    runStep();
+  }
+
+  function showVerifyResult() {
+    var spinner = document.getElementById('verify-spinner');
+    var statusEl = document.getElementById('verify-status');
+    var resultEl = document.getElementById('verify-result');
+    var subEl    = document.getElementById('verify-sublabel');
+    var btnWrap  = document.getElementById('verify-btn-wrap');
+
+    spinner.style.display  = 'none';
+    statusEl.style.display = 'none';
+
+    resultEl.className     = 'verify-result success';
+    resultEl.textContent   = '✓ Subscription Verified';
+    resultEl.style.display = 'block';
+    subEl.textContent      = 'Your subscription has been confirmed';
+    subEl.style.display    = 'block';
+    btnWrap.style.display  = 'block';
+  }
+
+  function closeVerify() {
+    document.getElementById('verify-overlay').classList.remove('active');
+    if (pendingStep !== null) {
+      complete(pendingStep);
+      pendingStep = null;
+    }
   }
 
   function complete(step) {
@@ -822,6 +1081,10 @@
     var card = document.getElementById('card-' + step);
     card.classList.add('done');
     updateProgress();
+
+    // Toast notification
+    var labels = { 1:'NextLevelX', 2:'ARB LOL', 3:'ItTz Yami', 4:'HbdawyLOL', 5:'Discord' };
+    showToast('✓ ' + (labels[step] || 'Step ' + step) + ' verified!');
 
     if (Object.keys(completed).length === 5) {
       setTimeout(showUnlock, 400);
@@ -844,6 +1107,13 @@
     var btnWrap = document.getElementById('register-btn-wrap');
     if (btnWrap && !btnWrap.hasChildNodes()) {
 
+      // لو الأماكن اتملت — وضي رسالة بدل الزرار
+      if (SPOTS_TAKEN >= TOTAL_SPOTS) {
+        document.getElementById('spots-full-msg').style.display = 'block';
+        sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
       // نشوف امتى أول مرة ظهر الزرار
       var shownAt = localStorage.getItem('gc_link_shown_at');
       var now = Date.now();
@@ -861,7 +1131,7 @@
         // الوقت خلص — نوضي رسالة انتهى مباشرة
         var expired = document.createElement('p');
         expired.className = 'link-expired';
-        expired.textContent = '⛔ Registration link has expired. Contact us on our Discord server.';
+        expired.textContent = '⛔ Registration link has expired. Please refresh the page.';
         btnWrap.appendChild(expired);
         sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
@@ -937,6 +1207,30 @@
     var pct = (SPOTS_TAKEN / TOTAL_SPOTS) * 100;
     document.getElementById('spots-fill').style.width  = pct + '%';
     document.getElementById('spots-taken').textContent = SPOTS_TAKEN;
+  }
+
+  // ── Toast Notification ──
+  function showToast(msg) {
+    var wrap = document.getElementById('toast-wrap');
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    wrap.appendChild(t);
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { t.classList.add('show'); });
+    });
+    setTimeout(function() {
+      t.classList.remove('show');
+      setTimeout(function() { t.remove(); }, 350);
+    }, 3000);
+  }
+
+  // ── Admin Reset ──
+  function adminReset() {
+    if (!confirm('Reset all progress? This will clear all completed steps.')) return;
+    localStorage.removeItem('gc_steps');
+    localStorage.removeItem('gc_link_shown_at');
+    location.reload();
   }
 </script>
 </body>
